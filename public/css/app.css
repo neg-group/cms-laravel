@@ -10903,3 +10903,14 @@ a.text-dark:focus {
   }
 }
 
+.profile-avatar {
+  border-radius: 50%;
+  background-image: url(/user/profile);
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-attachment: local;
+  width: 286px;
+  height: 286px;
+}
+
