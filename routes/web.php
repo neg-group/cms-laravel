@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/user/profile', [App\Http\Controllers\UserController::class, 'avatar']);
+Route::get('/user/profile', [App\Http\Controllers\UserController::class, 'profile']);
 Route::post('/user/profile', [App\Http\Controllers\UserController::class, 'update']);
 
 Auth::routes(['verify' => true]);

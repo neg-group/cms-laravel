@@ -14,7 +14,7 @@ use App\Models\User; ?>
         </thead>
         <tbody>
             @foreach (User::all() as $user)
-                @if ($user->id == Auth::user()->id)
+                @if ($user->id != Auth::user()->id)
                     <tr>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>

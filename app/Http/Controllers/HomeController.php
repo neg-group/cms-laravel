@@ -24,6 +24,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $status = session('status', null);
+        if ($status) session(['status' => null]);
+
+        return view('home')->with(compact('status'));
     }
 }

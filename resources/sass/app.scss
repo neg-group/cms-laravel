@@ -7,13 +7,14 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
-.profile-avatar {
+#profile-avatar {
     border-radius: 50%;
-    background-image: url(/user/profile);
+    background-image: none;
     background-position: center center;
     background-size: contain;
     background-repeat: no-repeat;
     background-attachment: local;
     width: 286px;
     height: 286px;
+    cursor: pointer;
 }

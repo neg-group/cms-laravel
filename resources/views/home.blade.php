@@ -8,18 +8,21 @@
                     <div class="card-header">{{ __('Dashboard') }}</div>
 
                     <div class="card-body">
-                        @if (session('status'))
-                            <div class="alert alert-success" role="alert">
-                                {{ session('status') }}
+                        @if ($status)
+                            <div class="alert alert-info" role="alert">
+                                {{ $status }}
                             </div>
                         @endif
 
+                        @include('partials.profile')
+
+                        <br>
+                        <hr><br>
+
                         @if (auth()->user()->permission > 32)
                             {{-- is admin --}}
-                            @include('partials.list-user')
+                            @include('partials.users')
                         @endif
-
-                        @include('partials.user-profile')
                     </div>
                 </div>
             </div>
