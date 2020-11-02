@@ -36,10 +36,10 @@ class UserController extends Controller
             $size = filesize($path);
             $avatar = file_get_contents($path);
         }
-        // dd($avatar);
+
         return new Response($avatar, 200, [
-            // 'Content-Type' => $mime,
-            // 'Content-Length' => $size
+            'Content-Type' => $mime,
+            'Content-Length' => $size
         ]);
     }
 
@@ -50,7 +50,8 @@ class UserController extends Controller
         if (!$user) {
             return new Response('401 (Unauthorized) status code indicates that the request has not been applied because it lacks valid authentication credentials for the target resource.', 401);
         }
-        $status = $image ? 'Please upload an image' : 'Please upload one of theses type of image: ' . implode(', ', $this->allowFileTypes);
+        $status = $image ? 'Please upload an image'
+            : 'Please upload one of theses type of image: ' . implode(', ', $this->allowFileTypes);
         $mime = $image->getMimeType();
         $size = $image->getMaxFilesize();
         $path = $image->getRealPath();
