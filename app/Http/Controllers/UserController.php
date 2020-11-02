@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
+use App\Ethereal;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -19,17 +22,10 @@ class UserController extends Controller
 
     public function profile()
     {
-        $user = auth()->user();
-        if (!$user) {
-            return new Response(null, 403);
-        }
-
-        if ($data = $user->profile_image) {
+        if ($data = Auth::user()->profile_image) {
             $data = explode("\n", $data);
             [$mime, $size] = explode(':', array_shift($data));
             $avatar = implode("\n", $data);
-            die($avatar);
-            $avatar = base64_decode($avatar);
         } else {
             $path = resource_path('img/profile-image.jpg');
             $mime = filetype($path);
@@ -37,29 +33,32 @@ class UserController extends Controller
             $avatar = file_get_contents($path);
         }
 
-        return new Response($avatar, 200, [
-            'Content-Type' => $mime,
-            'Content-Length' => $size
-        ]);
+        header('Content-Type: ' . $mime);
+        header('Content-Length: ' . $size);
+
+        die($avatar);
     }
 
     public function update()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $image = request('image');
-        if (!$user) {
-            return new Response('401 (Unauthorized) status code indicates that the request has not been applied because it lacks valid authentication credentials for the target resource.', 401);
+        try {
+            $mime = $image->getMimeType();
+        } catch (Exception $e) {
+            $mime = $_FILES['image']['type'] ?? null;
         }
-        $status = $image ? 'Please upload an image'
-            : 'Please upload one of theses type of image: ' . implode(', ', $this->allowFileTypes);
-        $mime = $image->getMimeType();
-        $size = $image->getMaxFilesize();
-        $path = $image->getRealPath();
-        $image = file_get_contents($path);
         if (!in_array($mime, $this->allowFileTypes)) {
-            session(compact('status'));
+            session(['status' => 'Please upload one of theses type of image: ' . implode(', ', $this->allowFileTypes)]);
             return redirect()->back();
         }
+        $path = $image->getRealPath();
+        $image = Ethereal::resize_image($path, 320, 320);
+        if (!$image) {
+            session(['status' => 'Unable to upload that image']);
+            return redirect()->back();
+        }
+        $size = strlen($image);
         $user->profile_image = implode("\n", [implode(':', [$mime, $size]), $image]);
         $user->save();
         session(['status' => 'Updated profile image']);

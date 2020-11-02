@@ -8,8 +8,9 @@
 @import '~bootstrap/scss/bootstrap';
 
 #profile-avatar {
+    border: 2px solid $border-color;
     border-radius: 50%;
-    background-image: none;
+    background-image: url($profile-image);
     background-position: center center;
     background-size: contain;
     background-repeat: no-repeat;
