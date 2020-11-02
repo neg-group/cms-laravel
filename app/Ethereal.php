@@ -35,10 +35,13 @@ class Ethereal
             $dst = imagecreatetruecolor($newwidth, $newheight);
             imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
             imagepng($dst, $tmp);
-            $result = file_get_contents($tmp);
         } catch (Throwable $e) {
+            error_log($e->getMessage(), 4);
         }
-        file_exists($tmp) && unlink($tmp);
+        if (file_exists($tmp)) {
+            $result = file_get_contents($tmp);
+            unlink($tmp);
+        }
         return $result;
     }
 }
