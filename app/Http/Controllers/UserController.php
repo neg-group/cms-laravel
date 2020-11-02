@@ -45,28 +45,23 @@ class UserController extends Controller
 
     public function update()
     {
-        if (!$user = auth()->user()) {
+        $user = auth()->user();
+        $image = request('image');
+        if (!$user) {
             return new Response('401 (Unauthorized) status code indicates that the request has not been applied because it lacks valid authentication credentials for the target resource.', 401);
         }
-        if (!$image = $_FILES['image'] ?? null) {
-            session(['status' => 'Please upload an image']);
-            return redirect()->back();
-        };
-        if (!in_array($mime = $image['type'], $this->allowFileTypes)) {
-            session(['status' => 'Please upload image type of (' . implode(', ', $this->allowFileTypes), ').']);
+        $status = $image ? 'Please upload an image' : 'Please upload one of theses type of image: ' . implode(', ', $this->allowFileTypes);
+        $mime = $image->getMimeType();
+        $size = $image->getMaxFilesize();
+        $path = $image->getRealPath();
+        $image = file_get_contents($path);
+        if (!in_array($mime, $this->allowFileTypes)) {
+            session(compact('status'));
             return redirect()->back();
         }
-        $size = $image['size'];
-        $path = $image['tmp_name'];
-        $image = file_get_contents($path);
         $user->profile_image = implode("\n", [implode(':', [$mime, $size]), $image]);
-
-        call_user_func([$user, 'save']) &&
-            session(['status' => 'Updated profile image']);
-
-        header("Content-Type: $mime");
-        header("Content-Length: $size");
-
+        $user->save();
+        session(['status' => 'Updated profile image']);
         return  redirect()->back();
     }
 }
